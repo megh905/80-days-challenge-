@@ -1,0 +1,14 @@
+{
+  "name": "80 Days Challenge",
+  "short_name": "80 Days",
+  "description": "Personal habit tracker for an 80-day challenge",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f6fb",
+  "theme_color": "#111827",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

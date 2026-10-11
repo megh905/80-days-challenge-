@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="Your personal 80 Days Challenge habit tracker.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>80 Days Challenge</title>
+<style>
+:root{--bg:#f4f6fb;--ink:#172033;--muted:#64748b;--card:#fff;--line:#e2e8f0;--navy:#111827;--gold:#facc15;--blue:#dff1ff;--pink:#ffe4e8;--green:#e0f8e7;--cyan:#dff5ff;--purple:#eee5ff;--yellow:#fff4cf}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:linear-gradient(130deg,#0b1220,#1e293b);color:#fff;padding:25px 18px 22px;border-radius:0 0 25px 25px}
+.eyebrow{color:var(--gold);font-size:.76rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase}
+h1{font-size:1.85rem;line-height:1.08;margin:8px 0}.sub{color:#cbd5e1;font-size:.9rem;margin:0}
+.wrap{max-width:900px;margin:auto;padding:16px}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:-2px}
+.metric,.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 3px 12px #0f172a08}
+.metric small{display:block;color:var(--muted);font-size:.74rem}.metric strong{font-size:1.45rem;display:block;margin-top:4px}
+.progress{height:8px;border-radius:99px;background:#e2e8f0;overflow:hidden;margin-top:10px}.progress span{display:block;height:100%;background:#16a34a;width:0;transition:width .2s}
+h2{font-size:1.1rem;margin:20px 0 10px}
+.daybar{display:flex;align-items:center;gap:9px}.daybar select{flex:1;min-width:0}
+button,select,textarea{font:inherit}button,select{border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:white;color:var(--ink)}button{cursor:pointer;font-weight:650}button.primary{background:var(--navy);color:white;border-color:var(--navy)}button:active{transform:scale(.98)}
+.habits{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.habit{border-radius:15px;padding:13px;border:1px solid #dbe3ec;min-height:136px;display:flex;flex-direction:column;gap:7px}
+.habit:nth-child(1){background:var(--blue)}.habit:nth-child(2){background:var(--pink)}.habit:nth-child(3){background:var(--green)}.habit:nth-child(4){background:var(--cyan)}.habit:nth-child(5){background:var(--purple)}.habit:nth-child(6){background:var(--yellow)}
+.habit label{display:flex;align-items:center;gap:8px;font-weight:800}.habit input[type=checkbox]{width:22px;height:22px;accent-color:#15803d}
+.target{font-size:.8rem;color:#475569}.status{font-size:.75rem;color:#475569;margin-top:auto}
+textarea{width:100%;min-height:100px;resize:vertical;border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
+.calendar{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}.calday{padding:8px 0;border-radius:9px;border:1px solid var(--line);background:#fff;font-size:.8rem}.calday.done{background:#dcfce7;border-color:#86efac;color:#166534}.calday.selected{outline:2px solid #334155;outline-offset:1px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.75rem;margin-top:9px}.dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.foot{color:var(--muted);font-size:.75rem;text-align:center;padding:20px 4px}
+@media(min-width:650px){header{padding:34px 28px}.wrap{padding:22px}.habits{grid-template-columns:repeat(3,1fr)}.calendar{grid-template-columns:repeat(10,1fr)}h1{font-size:2.4rem}}
+@media(max-width:360px){.metrics{gap:6px}.metric{padding:10px}.metric strong{font-size:1.2rem}.habits{grid-template-columns:1fr}.calendar{grid-template-columns:repeat(6,1fr)}}
+</style>
+</head>
+<body>
+<header><div class="wrap" style="padding:0"><div class="eyebrow">Your personal challenge</div><h1>80 DAYS<br><span style="color:#facc15">CHALLENGE</span></h1><p class="sub">Discipline today. A stronger tomorrow.</p></div></header>
+<main class="wrap">
+<section class="metrics">
+ <div class="metric"><small>Challenge day</small><strong id="currentMetric">1 / 80</strong></div>
+ <div class="metric"><small>Perfect days</small><strong id="perfectMetric">0 / 80</strong></div>
+ <div class="metric"><small>Current streak</small><strong id="streakMetric">0 days</strong></div>
+</section>
+<div class="panel" style="margin-top:10px"><div style="display:flex;justify-content:space-between;gap:8px"><strong>Overall progress</strong><strong id="percent">0%</strong></div><div class="progress"><span id="overallBar"></span></div><div class="target" id="summaryText" style="margin-top:8px">0 of 80 days fully completed</div></div>
+
+<h2>Daily checklist</h2>
+<div class="daybar"><button id="prev" aria-label="Previous day">←</button><select id="daySelect" aria-label="Select challenge day"></select><button id="next" aria-label="Next day">→</button></div>
+<div class="habits" id="habits" style="margin-top:10px"></div>
+<h2>Daily notes</h2>
+<textarea id="notes" placeholder="Wins, lessons, what to improve tomorrow…"></textarea>
+<div class="actions" style="margin-top:10px"><button class="primary" id="saveNotes">Save notes</button><button id="copyReport">Copy daily report</button><button id="exportData">Export backup</button><button id="importBtn">Import backup</button><input type="file" id="importFile" accept="application/json" hidden></div>
+
+<h2>80-day calendar</h2>
+<div class="panel"><div class="calendar" id="calendar"></div><div class="legend"><span><i class="dot" style="background:#dcfce7"></i>Perfect day</span><span><i class="dot" style="background:#fff"></i>In progress</span><span>Tap any day to view it</span></div></div>
+<div class="foot">Your progress is stored on this device. Export a backup regularly so you can restore it if you change phones or clear browser data.<br>80 days of consistency, not perfection.</div>
+</main>
+<script>
+const GOALS=[
+ {id:'study',name:'Study',target:'10 hours',icon:'📚'},
+ {id:'gym',name:'Gym',target:'2 hours',icon:'🏋️'},
+ {id:'food',name:'Food',target:'3,200 kcal',icon:'🍽️'},
+ {id:'water',name:'Water',target:'4 liters',icon:'💧'},
+ {id:'sleep',name:'Sleep',target:'8 hours · 11 PM–7 AM',icon:'🌙'},
+ {id:'meditation',name:'Meditation',target:'15 minutes',icon:'🧘'}
+];
+const KEY='challenge80-v1';
+let data=loadData(),day=1;
+function loadData(){try{return JSON.parse(localStorage.getItem(KEY))||{days:{}}}catch(e){return {days:{}}}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(data));renderStats();renderCalendar()}
+function entry(d){if(!data.days[d])data.days[d]={checks:{},notes:''};if(!data.days[d].checks)data.days[d].checks={};return data.days[d]}
+function perfect(d){return GOALS.every(g=>!!(data.days[d]&&data.days[d].checks&&data.days[d].checks[g.id]))}
+function count(d){return GOALS.filter(g=>!!(data.days[d]&&data.days[d].checks&&data.days[d].checks[g.id])).length}
+function renderDay(){
+ const e=entry(day);document.getElementById('daySelect').value=String(day);document.getElementById('notes').value=e.notes||'';
+ const root=document.getElementById('habits');root.innerHTML='';
+ GOALS.forEach(g=>{const card=document.createElement('div');card.className='habit';const label=document.createElement('label');const cb=document.createElement('input');cb.type='checkbox';cb.checked=!!e.checks[g.id];cb.addEventListener('change',()=>{entry(day).checks[g.id]=cb.checked;persist();renderDay()});label.append(cb,document.createTextNode(g.icon+' '+g.name));const target=document.createElement('div');target.className='target';target.textContent=g.target;const status=document.createElement('div');status.className='status';status.textContent=cb.checked?'✓ Completed':'Not completed yet';card.append(label,target,status);root.append(card)});
+ document.getElementById('prev').disabled=day===1;document.getElementById('next').disabled=day===80;
+}
+function renderStats(){
+ let full=0,total=0;for(let d=1;d<=80;d++){full+=perfect(d)?1:0;total+=count(d)}
+ const pct=Math.round(total/(80*GOALS.length)*100);document.getElementById('currentMetric').textContent=day+' / 80';document.getElementById('perfectMetric').textContent=full+' / 80';document.getElementById('streakMetric').textContent=streak()+' days';document.getElementById('percent').textContent=pct+'%';document.getElementById('overallBar').style.width=pct+'%';document.getElementById('summaryText').textContent=total+' of '+(80*GOALS.length)+' daily habits completed · '+full+' perfect days';
+}
+function streak(){let n=0;for(let d=day;d>=1;d--){if(perfect(d))n++;else break}return n}
+function renderCalendar(){const root=document.getElementById('calendar');root.innerHTML='';for(let d=1;d<=80;d++){const b=document.createElement('button');b.className='calday'+(perfect(d)?' done':'')+(d===day?' selected':'');b.textContent=d;b.setAttribute('aria-label','Day '+d+(perfect(d)?', completed':''));b.addEventListener('click',()=>{saveNotesQuiet();day=d;renderDay();renderStats();renderCalendar();window.scrollTo({top:0,behavior:'smooth'})});root.append(b)}}
+function saveNotesQuiet(){entry(day).notes=document.getElementById('notes').value||'';localStorage.setItem(KEY,JSON.stringify(data))}
+function init(){const s=document.getElementById('daySelect');for(let d=1;d<=80;d++){const o=document.createElement('option');o.value=d;o.textContent='Day '+d;s.append(o)}s.addEventListener('change',()=>{saveNotesQuiet();day=Number(s.value);renderDay();renderStats();renderCalendar()});document.getElementById('prev').onclick=()=>changeDay(-1);document.getElementById('next').onclick=()=>changeDay(1);document.getElementById('saveNotes').onclick=()=>{saveNotesQuiet();toast('Notes saved on this device.')};document.getElementById('notes').addEventListener('change',saveNotesQuiet);
+ document.getElementById('copyReport').onclick=async()=>{saveNotesQuiet();const e=entry(day);const report='80 DAYS CHALLENGE — DAY '+day+'\\n'+GOALS.map(g=>(e.checks[g.id]?'[x] ':'[ ] ')+g.name+' — '+g.target).join('\\n')+'\\n\\nNotes: '+(e.notes||'—');try{await navigator.clipboard.writeText(report);toast('Daily report copied.')}catch(err){prompt('Copy your report:',report)}};
+ document.getElementById('exportData').onclick=()=>{saveNotesQuiet();const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='80-days-challenge-backup.json';a.click();URL.revokeObjectURL(a.href)};
+ document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();document.getElementById('importFile').onchange=async ev=>{const f=ev.target.files[0];if(!f)return;try{const imported=JSON.parse(await f.text());if(!imported.days)throw Error('Invalid backup');data=imported;persist();renderDay();toast('Backup restored.')}catch(e){alert('Could not import this file. Please choose a valid challenge backup.')}ev.target.value=''};
+ renderDay();renderStats();renderCalendar();
+}
+function changeDay(delta){saveNotesQuiet();day=Math.max(1,Math.min(80,day+delta));renderDay();renderStats();renderCalendar()}
+let toastTimer;function toast(msg){let t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111827;color:white;padding:12px 16px;border-radius:12px;box-shadow:0 4px 20px #0003;z-index:10';document.body.append(t)}t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.hidden=true,2200)}
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+init();
+</script>
+</body></html>
